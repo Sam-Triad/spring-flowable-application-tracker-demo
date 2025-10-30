@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.samjsddevelopment.applicationtracker.dto.ApprovalDecisionRequest;
 import com.samjsddevelopment.applicationtracker.dto.UserTaskDto;
-import com.samjsddevelopment.applicationtracker.service.TaskService;
+import com.samjsddevelopment.applicationtracker.service.ApplicationTaskService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/tasks")
 public class TaskController {
 
-    private final TaskService taskService;
+    private final ApplicationTaskService taskService;
 
     @GetMapping("/available")
     @Operation(summary = "List unassigned tasks")
