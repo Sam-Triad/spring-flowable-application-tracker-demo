@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1lmhsi1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.39.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.7.0">
+  <bpmn:process id="Application_Process" name="Application Process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Create Application">
+      <bpmn:outgoing>Flow_Create_Submit</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_Create_Submit" sourceRef="StartEvent_1" targetRef="Submit_Application" />
+    <bpmn:sequenceFlow id="Flow_Submit_Gateway" sourceRef="Submit_Application" targetRef="Gateway_1dvfaqj" />
+    <bpmn:sequenceFlow id="Flow_Gateway_Verifier" sourceRef="Gateway_1dvfaqj" targetRef="Verifier_Approval" />
+    <bpmn:sequenceFlow id="Flow_Gateway_First_Admin" sourceRef="Gateway_1dvfaqj" targetRef="First_Level_Administrator_Approval" />
+    <bpmn:sequenceFlow id="Flow_First_Admin_Decision" sourceRef="First_Level_Administrator_Approval" targetRef="First_Level_Admin_Approved_Decision" />
+    <bpmn:parallelGateway id="Gateway_1dvfaqj">
+      <bpmn:incoming>Flow_Submit_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_Verifier</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Gateway_First_Admin</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="Gateway_0f2se5j">
+      <bpmn:incoming>Flow_Decision_Verifier_Approve_Gateway</bpmn:incoming>
+      <bpmn:incoming>Flow_Decision_First_Admin_Approve_Gateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_Gateway_Approve</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:endEvent id="Application_Approved" name="Application Approved">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="=true" target="applicationApproved" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Approve_Terminate_Approved</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_Gateway_Approve" sourceRef="Gateway_0f2se5j" targetRef="Approve_Application" />
+    <bpmn:sequenceFlow id="Flow_Verifier_Decision" sourceRef="Verifier_Approval" targetRef="Gateway_0fg7zn6" />
+    <bpmn:userTask id="Verifier_Approval" name="Verifier Approval">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition externalReference="verifier_approval" />
+        <zeebe:assignmentDefinition candidateGroups="Verifier" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=null" target="approved" />
+          <zeebe:output source="=approved" target="verifierApproved" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_Verifier</bpmn:incoming>
+      <bpmn:outgoing>Flow_Verifier_Decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="First_Level_Administrator_Approval" name="First Level Administrator Approval">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition externalReference="administrator_level_one_approval" />
+        <zeebe:assignmentDefinition candidateGroups="First_Level_Admin" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=null" target="approved" />
+          <zeebe:output source="=approved" target="firstLevelAdminApproved" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_First_Admin</bpmn:incoming>
+      <bpmn:outgoing>Flow_First_Admin_Decision</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0fg7zn6" name="Verifier Approved?">
+      <bpmn:incoming>Flow_Verifier_Decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_Decision_Verifier_Approve_Gateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Verifier_Decision_Reject</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_Decision_Verifier_Approve_Gateway" name="Approval" sourceRef="Gateway_0fg7zn6" targetRef="Gateway_0f2se5j">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(verifierApproved = true)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="First_Level_Admin_Approved_Decision" name="1st Level Admin Approved?">
+      <bpmn:incoming>Flow_First_Admin_Decision</bpmn:incoming>
+      <bpmn:outgoing>Flow_First_Admin_Decision_Reject</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Decision_First_Admin_Approve_Gateway</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_Verifier_Decision_Reject" name="Rejection" sourceRef="Gateway_0fg7zn6" targetRef="Reject_Application">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(verifierApproved = false)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_First_Admin_Decision_Reject" name="Rejection" sourceRef="First_Level_Admin_Approved_Decision" targetRef="Reject_Application">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(firstLevelAdminApproved = false)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Submit_Application" name="Submit Application">
+      <bpmn:extensionElements>
+        <zeebe:userTask />
+        <zeebe:formDefinition externalReference="submit_application" />
+        <zeebe:assignmentDefinition candidateGroups="Applicant" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Create_Submit</bpmn:incoming>
+      <bpmn:outgoing>Flow_Submit_Gateway</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_Decision_First_Admin_Approve_Gateway" name="Approval" sourceRef="First_Level_Admin_Approved_Decision" targetRef="Gateway_0f2se5j">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=(firstLevelAdminApproved = true)</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_Reject_Terminate_Rejected" sourceRef="Reject_Application" targetRef="Application_Rejected" />
+    <bpmn:serviceTask id="Reject_Application" name="Reject Application">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="Reject_Application" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_First_Admin_Decision_Reject</bpmn:incoming>
+      <bpmn:incoming>Flow_Verifier_Decision_Reject</bpmn:incoming>
+      <bpmn:outgoing>Flow_Reject_Terminate_Rejected</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_Approve_Terminate_Approved" sourceRef="Approve_Application" targetRef="Application_Approved" />
+    <bpmn:serviceTask id="Approve_Application" name="Approve Application">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="Approve_Application" retries="3" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Gateway_Approve</bpmn:incoming>
+      <bpmn:outgoing>Flow_Approve_Terminate_Approved</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Application_Rejected" name="Application Rejected">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="=false" target="applicationApproved" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_Reject_Terminate_Rejected</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1pwa5ea" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Application_Process">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="155" y="255" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1k7p0ra_di" bpmnElement="Gateway_1dvfaqj">
+        <dc:Bounds x="485" y="205" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0bhoymo_di" bpmnElement="Gateway_0f2se5j">
+        <dc:Bounds x="1065" y="205" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fkh5y0_di" bpmnElement="Application_Approved">
+        <dc:Bounds x="1302" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1293" y="255" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0nbk4gx_di" bpmnElement="Verifier_Approval">
+        <dc:Bounds x="570" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ls83nw_di" bpmnElement="First_Level_Administrator_Approval">
+        <dc:Bounds x="570" y="310" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0fg7zn6_di" bpmnElement="Gateway_0fg7zn6" isMarkerVisible="true">
+        <dc:Bounds x="735" y="115" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="715" y="85" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1yk9og6_di" bpmnElement="First_Level_Admin_Approved_Decision" isMarkerVisible="true">
+        <dc:Bounds x="735" y="325" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="722" y="382" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17w5oui_di" bpmnElement="Submit_Application">
+        <dc:Bounds x="310" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0sngs35_di" bpmnElement="Reject_Application">
+        <dc:Bounds x="850" y="190" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16ustcd_di" bpmnElement="Approve_Application">
+        <dc:Bounds x="1160" y="190" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0d6rdtm_di" bpmnElement="Application_Rejected">
+        <dc:Bounds x="982" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="973" y="255" width="54" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1276i95_di" bpmnElement="Flow_Create_Submit">
+        <di:waypoint x="218" y="230" />
+        <di:waypoint x="310" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p5wmdm_di" bpmnElement="Flow_Submit_Gateway">
+        <di:waypoint x="410" y="230" />
+        <di:waypoint x="485" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dq9tfm_di" bpmnElement="Flow_Gateway_Verifier">
+        <di:waypoint x="510" y="205" />
+        <di:waypoint x="510" y="140" />
+        <di:waypoint x="570" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0apvzwj_di" bpmnElement="Flow_Gateway_First_Admin">
+        <di:waypoint x="510" y="255" />
+        <di:waypoint x="510" y="350" />
+        <di:waypoint x="570" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18w4m93_di" bpmnElement="Flow_First_Admin_Decision">
+        <di:waypoint x="670" y="350" />
+        <di:waypoint x="735" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18ad2gt_di" bpmnElement="Flow_Gateway_Approve">
+        <di:waypoint x="1115" y="230" />
+        <di:waypoint x="1160" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qlbqmj_di" bpmnElement="Flow_Verifier_Decision">
+        <di:waypoint x="670" y="140" />
+        <di:waypoint x="735" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ejqmk7_di" bpmnElement="Flow_Decision_Verifier_Approve_Gateway">
+        <di:waypoint x="785" y="140" />
+        <di:waypoint x="1090" y="140" />
+        <di:waypoint x="1090" y="205" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="122" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_146fxoy_di" bpmnElement="Flow_Verifier_Decision_Reject">
+        <di:waypoint x="760" y="165" />
+        <di:waypoint x="760" y="230" />
+        <di:waypoint x="850" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="767" y="213" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rjys2j_di" bpmnElement="Flow_First_Admin_Decision_Reject">
+        <di:waypoint x="760" y="325" />
+        <di:waypoint x="760" y="230" />
+        <di:waypoint x="850" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="767" y="243" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ew1wyg_di" bpmnElement="Flow_Decision_First_Admin_Approve_Gateway">
+        <di:waypoint x="785" y="350" />
+        <di:waypoint x="1090" y="350" />
+        <di:waypoint x="1090" y="255" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="916" y="363" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0a0ulf0_di" bpmnElement="Flow_Reject_Terminate_Rejected">
+        <di:waypoint x="950" y="230" />
+        <di:waypoint x="982" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_049x0jp_di" bpmnElement="Flow_Approve_Terminate_Approved">
+        <di:waypoint x="1260" y="230" />
+        <di:waypoint x="1302" y="230" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
