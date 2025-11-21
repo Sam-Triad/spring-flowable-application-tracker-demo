@@ -7,5 +7,5 @@ import com.samjsddevelopment.applicationtracker.model.Application;
 
 public interface ApplicationRepository extends JpaRepository<Application, UUID> {
 
-    Optional<Application> findByProcessInstanceKey(long processInstanceKey);
+    Optional<Application> findByProcessInstanceId(String processInstanceId);
 }

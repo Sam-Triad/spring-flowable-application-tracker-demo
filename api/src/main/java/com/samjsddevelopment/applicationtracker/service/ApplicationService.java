@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.flowable.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +32,7 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 public class ApplicationService {
 
+        private final RuntimeService runtimeService;
         private final ApplicationRepository applicationRepository;
         private final ApplicationMapper applicationMapper;
 
@@ -39,10 +41,12 @@ public class ApplicationService {
 
         @Transactional
         public ApplicationDto createApplication(CreateApplicationRequest request) {
-                // var application = Application.builder()
-                //                 .applicantUsername(request.applicantUsername())
-                //                 .build();
-                // var savedApplication = applicationRepository.save(application);
+                var application = Application.builder()
+                                .applicantUsername(request.applicantUsername())
+                                .build();
+                var savedApplication = applicationRepository.save(application);
+
+                var processInstance = runtimeService.startProcessInstanceById(processId);
 
                 // var processInstanceResult = camundaClient.newCreateInstanceCommand()
                 //                 .bpmnProcessId(processId)
@@ -50,14 +54,13 @@ public class ApplicationService {
                 //                 .variables(Map.of("applicationId", savedApplication.getId().toString()))
                 //                 .send()
                 //                 .join();
-                // application.setProcessInstanceKey(processInstanceResult.getProcessInstanceKey());
-                // applicationRepository.save(application);
+                application.setProcessInstanceId(processInstance.getId());
+                applicationRepository.save(application);
 
-                // return applicationMapper.toDto(savedApplication);
-                return new ApplicationDto();
+                return applicationMapper.toDto(savedApplication);
         }
 
-        public ApplicationDto updateApplication(UUID id, UpdateApplicationRequest request) {
+        // public ApplicationDto updateApplication(UUID id, UpdateApplicationRequest request) {
                 // var application = applicationRepository.findById(id)
                 //                 .orElseThrow(() -> new EntityNotFoundException("Application not found with id: " + id));
 
@@ -68,23 +71,23 @@ public class ApplicationService {
                 // application.setInformation(request.information());
                 // var updatedApplication = applicationRepository.save(application);
                 // return applicationMapper.toDto(updatedApplication);
-                return new ApplicationDto();
-        }
+                // return new ApplicationDto();
+        // }
 
-        public void submitApplication(UUID id, String userId, String userEmail) {
+        // public void submitApplication(UUID id, String userId, String userEmail) {
                 // var application = applicationRepository.findById(id)
                 //                 .orElseThrow(() -> new NotFoundException("Application not found with id: " + id));
 
                 // // Find user task and get key
                 // var results = camundaClient.newUserTaskQuery()
-                //                 .filter(f -> f.processInstanceKey(application.getProcessInstanceKey()))
+                //                 .filter(f -> f.processInstanceId(application.getprocessInstanceId()))
                 //                 .send()
                 //                 .join();
                 // var items = results.items();
                 // if (items == null || items.isEmpty()) {
                 //         throw new CamundaStateException(
                 //                         "No user task found for process instance: "
-                //                                         + application.getProcessInstanceKey());
+                //                                         + application.getprocessInstanceId());
                 // }
                 // var userTaskKey = items.getFirst().getKey();
 
@@ -105,7 +108,7 @@ public class ApplicationService {
                 //                 .join();
                 // application.setApplicationStatus(ApplicationStatusEnum.IN_REVIEW);
                 // applicationRepository.save(application);
-        }
+        // }
 
         public Page<ApplicationDto> listApplications(Pageable pageable) {
                 var page = applicationRepository.findAll(pageable);
@@ -143,7 +146,7 @@ public class ApplicationService {
         public void deleteApplication(UUID id) {
                 // var application = applicationRepository.findById(id)
                 //                 .orElseThrow(() -> new NotFoundException("Application not found with id: " + id));
-                // camundaClient.newCancelInstanceCommand(application.getProcessInstanceKey()).send().join();
+                // camundaClient.newCancelInstanceCommand(application.getprocessInstanceId()).send().join();
 
                 // applicationRepository.delete(application);
         }

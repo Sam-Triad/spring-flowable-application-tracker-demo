@@ -44,7 +44,7 @@ public class ApplicationTaskService {
         //         .map(task -> {
         //             // Look up application by process instance key
         //             Application application = applicationRepository
-        //                     .findByProcessInstanceKey(task.getProcessInstanceKey()).orElseThrow(NotFoundException::new);
+        //                     .findByprocessInstanceId(task.getprocessInstanceId()).orElseThrow(NotFoundException::new);
 
         //             return UserTaskDto.builder().assigneeUsername(task.getAssignee()).key(task.getKey()).state(TaskStateEnum.fromString(task.getState()))
         //                     .elementId(task.getElementId()).applicationId(application.getId()).build();
@@ -103,7 +103,7 @@ public class ApplicationTaskService {
         // }
         // var userTask = userTaskList.getFirst();
         // Application application = applicationRepository
-        //         .findByProcessInstanceKey(userTask.getProcessInstanceKey()).orElseThrow();
+        //         .findByprocessInstanceId(userTask.getprocessInstanceId()).orElseThrow();
 
         // return UserTaskDto.builder().elementId(userTask.getElementId()).applicationId(application.getId())
         //         .state(TaskStateEnum.fromString(userTask.getState()))

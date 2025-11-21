@@ -36,7 +36,7 @@ public class Application extends Auditable{
     @EqualsAndHashCode.Include
     private UUID id;
 
-    private long processInstanceKey;
+    private String processInstanceId;
 
     private String applicantUsername;
 

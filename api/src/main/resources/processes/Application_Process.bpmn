@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Flowable Design" exporterVersion="2025.1.03" design:palette="flowable-work-process-palette">
+  <process id="Application_Process" name="Application Process" isExecutable="true">
+    <extensionElements>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2025-11-03T10:20:11.850Z]]></design:creationdate>
+      <design:modificationdate><![CDATA[2025-11-21T17:01:47.543Z]]></design:modificationdate>
+    </extensionElements>
+    <userTask id="Verifier_Approval" name="Verifier Approval" flowable:candidateGroups="Verifier" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="First_Level_Administrator_Approval" name="First Level Administrator Approval" flowable:candidateGroups="First_Level_Admin" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <userTask id="Submit_Application" name="Submit Application" flowable:candidateGroups="Applicant" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:task-candidates-type><![CDATA[all]]></flowable:task-candidates-type>
+        <design:stencilid><![CDATA[FormTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </userTask>
+    <serviceTask id="Reject_Application" name="Reject Application" flowable:delegateExpression="ApplicationRejectedTask">
+      <extensionElements>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="Approve_Application" name="Approve Application" flowable:delegateExpression="ApplicationApprovedTask">
+      <extensionElements>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <parallelGateway id="Gateway_1dvfaqj">
+      <extensionElements>
+        <design:stencilid><![CDATA[ParallelGateway]]></design:stencilid>
+      </extensionElements>
+    </parallelGateway>
+    <parallelGateway id="Gateway_0f2se5j">
+      <extensionElements>
+        <design:stencilid><![CDATA[ParallelGateway]]></design:stencilid>
+      </extensionElements>
+    </parallelGateway>
+    <exclusiveGateway id="Gateway_0fg7zn6" name="Verifier Approved?">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <exclusiveGateway id="First_Level_Admin_Approved_Decision" name="1st Level Admin Approved?">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <startEvent id="StartEvent_1" name="Create Application" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="Application_Approved" name="Application Approved">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <endEvent id="Application_Rejected" name="Application Rejected">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndTerminateEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <terminateEventDefinition></terminateEventDefinition>
+    </endEvent>
+    <sequenceFlow id="Flow_Verifier_Decision" sourceRef="Verifier_Approval" targetRef="Gateway_0fg7zn6">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_First_Admin_Decision" sourceRef="First_Level_Administrator_Approval" targetRef="First_Level_Admin_Approved_Decision">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Submit_Gateway" sourceRef="Submit_Application" targetRef="Gateway_1dvfaqj">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Reject_Terminate_Rejected" sourceRef="Reject_Application" targetRef="Application_Rejected">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Approve_Terminate_Approved" sourceRef="Approve_Application" targetRef="Application_Approved">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Gateway_Verifier" sourceRef="Gateway_1dvfaqj" targetRef="Verifier_Approval">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Gateway_First_Admin" sourceRef="Gateway_1dvfaqj" targetRef="First_Level_Administrator_Approval">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Gateway_Approve" sourceRef="Gateway_0f2se5j" targetRef="Approve_Application">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Decision_Verifier_Approve_Gateway" name="Approval" sourceRef="Gateway_0fg7zn6" targetRef="Gateway_0f2se5j">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[=(verifierApproved = true)]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Verifier_Decision_Reject" name="Rejection" sourceRef="Gateway_0fg7zn6" targetRef="Reject_Application">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[=(verifierApproved = false)]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_First_Admin_Decision_Reject" name="Rejection" sourceRef="First_Level_Admin_Approved_Decision" targetRef="Reject_Application">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[=(firstLevelAdminApproved = false)]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Decision_First_Admin_Approve_Gateway" name="Approval" sourceRef="First_Level_Admin_Approved_Decision" targetRef="Gateway_0f2se5j">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[=(firstLevelAdminApproved = true)]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Create_Submit" sourceRef="StartEvent_1" targetRef="Submit_Application">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Application_Process">
+    <bpmndi:BPMNPlane bpmnElement="Application_Process" id="BPMNPlane_Application_Process">
+      <bpmndi:BPMNShape bpmnElement="Verifier_Approval" id="BPMNShape_Verifier_Approval">
+        <omgdc:Bounds height="80.0" width="100.0" x="570.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="First_Level_Administrator_Approval" id="BPMNShape_First_Level_Administrator_Approval">
+        <omgdc:Bounds height="80.0" width="100.0" x="570.0" y="310.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Submit_Application" id="BPMNShape_Submit_Application">
+        <omgdc:Bounds height="80.0" width="100.0" x="310.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Reject_Application" id="BPMNShape_Reject_Application">
+        <omgdc:Bounds height="80.0" width="100.0" x="850.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Approve_Application" id="BPMNShape_Approve_Application">
+        <omgdc:Bounds height="80.0" width="100.0" x="1160.0" y="190.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_1dvfaqj" id="BPMNShape_Gateway_1dvfaqj">
+        <omgdc:Bounds height="40.0" width="40.0" x="490.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_0f2se5j" id="BPMNShape_Gateway_0f2se5j">
+        <omgdc:Bounds height="40.0" width="40.0" x="1070.0" y="210.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_0fg7zn6" id="BPMNShape_Gateway_0fg7zn6">
+        <omgdc:Bounds height="40.0" width="40.0" x="740.0" y="120.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="99.0" x="715.0" y="85.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="First_Level_Admin_Approved_Decision" id="BPMNShape_First_Level_Admin_Approved_Decision">
+        <omgdc:Bounds height="40.0" width="40.0" x="740.0" y="330.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="147.0" x="722.0" y="382.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="StartEvent_1" id="BPMNShape_StartEvent_1">
+        <omgdc:Bounds height="30.0" width="30.0" x="185.0" y="215.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="98.0" x="155.0" y="255.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Application_Approved" id="BPMNShape_Application_Approved">
+        <omgdc:Bounds height="28.0" width="28.0" x="1306.0" y="216.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="113.0" x="1293.0" y="255.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Application_Rejected" id="BPMNShape_Application_Rejected">
+        <omgdc:Bounds height="28.0" width="28.0" x="986.0" y="216.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="109.0" x="973.0" y="255.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Verifier_Decision_Reject" id="BPMNEdge_Flow_Verifier_Decision_Reject" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="760.0" y="160.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="850.0" y="230.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="50.0" x="767.0" y="213.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_First_Admin_Decision" id="BPMNEdge_Flow_First_Admin_Decision" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="670.0" y="350.0"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="350.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Decision_First_Admin_Approve_Gateway" id="BPMNEdge_Flow_Decision_First_Admin_Approve_Gateway" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="780.0" y="350.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="350.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="250.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="47.0" x="916.0" y="363.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Approve_Terminate_Approved" id="BPMNEdge_Flow_Approve_Terminate_Approved" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="1260.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1306.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Verifier_Decision" id="BPMNEdge_Flow_Verifier_Decision" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="670.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="740.0" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Reject_Terminate_Rejected" id="BPMNEdge_Flow_Reject_Terminate_Rejected" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="14.0" flowable:targetDockerY="14.0">
+        <omgdi:waypoint x="950.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="986.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_First_Admin_Decision_Reject" id="BPMNEdge_Flow_First_Admin_Decision_Reject" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="760.0" y="330.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="850.0" y="230.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="50.0" x="767.0" y="243.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Verifier" id="BPMNEdge_Flow_Gateway_Verifier" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="510.0" y="210.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_Approve" id="BPMNEdge_Flow_Gateway_Approve" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1110.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1160.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Decision_Verifier_Approve_Gateway" id="BPMNEdge_Flow_Decision_Verifier_Approve_Gateway" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="780.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1090.0" y="210.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="47.0" x="916.0" y="122.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Gateway_First_Admin" id="BPMNEdge_Flow_Gateway_First_Admin" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="510.0" y="250.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="350.0"></omgdi:waypoint>
+        <omgdi:waypoint x="570.0" y="350.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Submit_Gateway" id="BPMNEdge_Flow_Submit_Gateway" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="410.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Create_Submit" id="BPMNEdge_Flow_Create_Submit" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="215.0" y="230.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310.0" y="230.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
