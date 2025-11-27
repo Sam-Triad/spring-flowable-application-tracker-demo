@@ -36,8 +36,8 @@ public class ApplicationService {
         private final ApplicationRepository applicationRepository;
         private final ApplicationMapper applicationMapper;
 
-        @Value("${processes.application-process-id}")
-        private String processId;
+        @Value("${processes.application-process-key}")
+        private String processKey;
 
         @Transactional
         public ApplicationDto createApplication(CreateApplicationRequest request) {
@@ -46,14 +46,8 @@ public class ApplicationService {
                                 .build();
                 var savedApplication = applicationRepository.save(application);
 
-                var processInstance = runtimeService.startProcessInstanceById(processId);
+                var processInstance = runtimeService.startProcessInstanceByKey(processKey);
 
-                // var processInstanceResult = camundaClient.newCreateInstanceCommand()
-                //                 .bpmnProcessId(processId)
-                //                 .latestVersion()
-                //                 .variables(Map.of("applicationId", savedApplication.getId().toString()))
-                //                 .send()
-                //                 .join();
                 application.setProcessInstanceId(processInstance.getId());
                 applicationRepository.save(application);
 
