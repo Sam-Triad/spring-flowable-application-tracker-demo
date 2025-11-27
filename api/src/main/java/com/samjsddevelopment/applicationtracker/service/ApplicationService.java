@@ -32,7 +32,7 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 public class ApplicationService {
 
-        private final RuntimeService runtimeService;
+        private final RuntimeService flowableRuntimeService;
         private final ApplicationRepository applicationRepository;
         private final ApplicationMapper applicationMapper;
 
@@ -46,7 +46,7 @@ public class ApplicationService {
                                 .build();
                 var savedApplication = applicationRepository.save(application);
 
-                var processInstance = runtimeService.startProcessInstanceByKey(processKey);
+                var processInstance = flowableRuntimeService.startProcessInstanceByKey(processKey);
 
                 application.setProcessInstanceId(processInstance.getId());
                 applicationRepository.save(application);

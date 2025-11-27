@@ -4,9 +4,6 @@ import java.util.UUID;
 
 import com.samjsddevelopment.applicationtracker.enums.TaskStateEnum;
 
-import lombok.Builder;
-
-@Builder
-public record UserTaskDto(long key, String elementId, UUID applicationId, String assigneeUsername, TaskStateEnum state) {
+public record UserTaskDto(UUID id, String name, UUID processInstanceId, String assigneeUsername, TaskStateEnum state) {
     
 }

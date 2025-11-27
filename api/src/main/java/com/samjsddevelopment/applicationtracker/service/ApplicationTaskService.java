@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import com.samjsddevelopment.applicationtracker.dto.UserTaskDto;
 import com.samjsddevelopment.applicationtracker.enums.TaskStateEnum;
 import com.samjsddevelopment.applicationtracker.exception.FlowableStateException;
 import com.samjsddevelopment.applicationtracker.exception.NotFoundException;
+import com.samjsddevelopment.applicationtracker.mapper.UserTaskMapper;
 import com.samjsddevelopment.applicationtracker.model.Application;
 import com.samjsddevelopment.applicationtracker.repository.ApplicationRepository;
 
@@ -24,34 +27,13 @@ import lombok.RequiredArgsConstructor;
 public class ApplicationTaskService {
 
     private final ApplicationRepository applicationRepository;
+    private final TaskService flowableTaskService;
+    private final UserTaskMapper userTaskMapper;
 
     @Transactional(readOnly = true)
     public List<UserTaskDto> getAvailableTasks(List<String> userGroups) {
-        // // SDK does not support filtering by multiple user groups so make multiple
-        // // requests in a loop
-        // List<UserTask> items = new ArrayList<>();
-        // userGroups.forEach(group -> {
-        //     var results = camundaClient.newUserTaskQuery()
-        //             .filter(f -> f.candidateGroup(group))
-        //             .send()
-        //             .join();
-        //     items.addAll(results.items());
-        // });
-
-        // // Filter out tasks with assignees and map to DTOs
-        // var test = items.stream()
-        //         // .filter(task -> task.getAssignee() == null || task.getAssignee().isEmpty())
-        //         .map(task -> {
-        //             // Look up application by process instance key
-        //             Application application = applicationRepository
-        //                     .findByprocessInstanceId(task.getprocessInstanceId()).orElseThrow(NotFoundException::new);
-
-        //             return UserTaskDto.builder().assigneeUsername(task.getAssignee()).key(task.getKey()).state(TaskStateEnum.fromString(task.getState()))
-        //                     .elementId(task.getElementId()).applicationId(application.getId()).build();
-        //         })
-        //         .collect(Collectors.toList());
-        // return test;
-        return Collections.emptyList();
+        var tasks = flowableTaskService.createTaskQuery().active().taskCandidateGroupIn(userGroups).taskUnassigned().list();
+        return userTaskMapper.toDtoList(tasks);
     }
 
     public void makeApplicationDecision(String userId, long userTaskId, boolean approved) {
@@ -108,7 +90,7 @@ public class ApplicationTaskService {
         // return UserTaskDto.builder().elementId(userTask.getElementId()).applicationId(application.getId())
         //         .state(TaskStateEnum.fromString(userTask.getState()))
         //         .assigneeUsername(userTask.getAssignee()).build();
-        return new UserTaskDto(key, null, null, null, null);
+        return new UserTaskDto();
     }
 
 }
