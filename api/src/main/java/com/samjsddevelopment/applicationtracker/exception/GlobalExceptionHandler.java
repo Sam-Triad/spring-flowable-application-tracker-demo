@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(CamundaStateException.class)
-    public ProblemDetail camundaStateException(CamundaStateException ex) {
+    @ExceptionHandler(FlowableStateException.class)
+    public ProblemDetail camundaStateException(FlowableStateException ex) {
         var pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         pd.setTitle("Internal Error");
         return pd;

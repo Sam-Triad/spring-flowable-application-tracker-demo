@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.samjsddevelopment.applicationtracker.dto.UserTaskDto;
 import com.samjsddevelopment.applicationtracker.enums.TaskStateEnum;
-import com.samjsddevelopment.applicationtracker.exception.CamundaStateException;
+import com.samjsddevelopment.applicationtracker.exception.FlowableStateException;
 import com.samjsddevelopment.applicationtracker.exception.NotFoundException;
 import com.samjsddevelopment.applicationtracker.model.Application;
 import com.samjsddevelopment.applicationtracker.repository.ApplicationRepository;

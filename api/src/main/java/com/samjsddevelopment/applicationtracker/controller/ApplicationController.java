@@ -43,12 +43,12 @@ public class ApplicationController {
         return new ResponseEntity<>(applicationService.createApplication(request), HttpStatus.CREATED);
     }
 
-    // @PutMapping("/{id}")
-    // @Operation(summary = "Update an application")
-    // public ResponseEntity<ApplicationDto> updateApplication(@PathVariable UUID id,
-    //         @RequestBody UpdateApplicationRequest request) {
-    //     return ResponseEntity.ok(applicationService.updateApplication(id, request));
-    // }
+    @PutMapping("/{id}")
+    @Operation(summary = "Update an application")
+    public ResponseEntity<ApplicationDto> updateApplication(@PathVariable UUID id,
+            @RequestBody UpdateApplicationRequest request) {
+        return ResponseEntity.ok(applicationService.updateApplication(id, request));
+    }
 
     // @PostMapping("/{id}/submit")
     // @Operation(summary = "Submit an application for review")

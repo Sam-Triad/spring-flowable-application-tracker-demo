@@ -11,7 +11,7 @@ import com.samjsddevelopment.applicationtracker.dto.ApplicationDto;
 import com.samjsddevelopment.applicationtracker.dto.CreateApplicationRequest;
 import com.samjsddevelopment.applicationtracker.dto.UpdateApplicationRequest;
 import com.samjsddevelopment.applicationtracker.enums.ApplicationStatusEnum;
-import com.samjsddevelopment.applicationtracker.exception.CamundaStateException;
+import com.samjsddevelopment.applicationtracker.exception.FlowableStateException;
 import com.samjsddevelopment.applicationtracker.exception.NotFoundException;
 import com.samjsddevelopment.applicationtracker.mapper.ApplicationMapper;
 import com.samjsddevelopment.applicationtracker.model.Application;
@@ -54,19 +54,18 @@ public class ApplicationService {
                 return applicationMapper.toDto(savedApplication);
         }
 
-        // public ApplicationDto updateApplication(UUID id, UpdateApplicationRequest request) {
-                // var application = applicationRepository.findById(id)
-                //                 .orElseThrow(() -> new EntityNotFoundException("Application not found with id: " + id));
+        public ApplicationDto updateApplication(UUID id, UpdateApplicationRequest request) {
+                var application = applicationRepository.findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException("Application not found with id: " + id));
 
-                // if (!application.getApplicationStatus().equals(ApplicationStatusEnum.WAITING_FOR_SUBMISSION)) {
-                //         throw new CamundaStateException("Application must be waiting for submission to update.");
-                // }
+                if (!application.getApplicationStatus().equals(ApplicationStatusEnum.WAITING_FOR_SUBMISSION)) {
+                        throw new FlowableStateException("Application must be waiting for submission to update.");
+                }
 
-                // application.setInformation(request.information());
-                // var updatedApplication = applicationRepository.save(application);
-                // return applicationMapper.toDto(updatedApplication);
-                // return new ApplicationDto();
-        // }
+                application.setInformation(request.information());
+                var updatedApplication = applicationRepository.save(application);
+                return applicationMapper.toDto(updatedApplication);
+        }
 
         // public void submitApplication(UUID id, String userId, String userEmail) {
                 // var application = applicationRepository.findById(id)
@@ -112,7 +111,7 @@ public class ApplicationService {
 
         public void approveApplication(UUID applicationId) {
                 var application = applicationRepository.findById(applicationId)
-                                .orElseThrow(() -> new CamundaStateException(
+                                .orElseThrow(() -> new FlowableStateException(
                                                 "Application not found with id: " + applicationId));
 
                 log.info("Application {} approved", applicationId);
@@ -122,7 +121,7 @@ public class ApplicationService {
 
         public void rejectApplication(UUID applicationId) {
                 var application = applicationRepository.findById(applicationId)
-                                .orElseThrow(() -> new CamundaStateException(
+                                .orElseThrow(() -> new FlowableStateException(
                                                 "Application not found with id: " + applicationId));
 
                 log.info("Application {} rejected", applicationId);
@@ -132,7 +131,7 @@ public class ApplicationService {
 
         public ApplicationDto getApplication(UUID applicationId) {
                 var application = applicationRepository.findById(applicationId)
-                                .orElseThrow(() -> new CamundaStateException(
+                                .orElseThrow(() -> new FlowableStateException(
                                                 "Application not found with id: " + applicationId));
                 return applicationMapper.toDto(application);
         }
